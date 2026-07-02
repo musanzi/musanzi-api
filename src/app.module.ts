@@ -15,6 +15,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { RolesModule } from './modules/roles/roles.module';
 import { UsersModule } from './modules/users/users.module';
 import { StatsModule } from './modules/stats/stats.module';
+import { ProjectsModule } from './modules/projects/projects.module';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { StatsModule } from './modules/stats/stats.module';
     AuthModule,
     UsersModule,
     RolesModule,
+    ProjectsModule,
     StatsModule
   ],
   providers: [

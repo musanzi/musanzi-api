@@ -3,19 +3,18 @@ import dataSource from '../orm.config';
 import { RoleEnum } from '../../auth/enums';
 import { Role } from '../../roles/entities/role.entity';
 import { User } from '../../users/entities/user.entity';
+import { config } from 'dotenv';
+
+config({
+  path: '.env'
+});
 
 const seedUsers = [
   {
     email: 'admin@admin.com',
     name: 'Admin',
-    password: 'admin1234',
+    password: process.env.ADMIN_PASSWORD,
     role: RoleEnum.ADMIN
-  },
-  {
-    email: 'user@user.com',
-    name: 'User',
-    password: 'user1234',
-    role: RoleEnum.USER
   }
 ];
 
@@ -28,7 +27,7 @@ async function seed(): Promise<void> {
 
     const roles = new Map<RoleEnum, Role>();
 
-    for (const roleName of [RoleEnum.ADMIN, RoleEnum.USER]) {
+    for (const roleName of [RoleEnum.ADMIN]) {
       let role = await roleRepository.findOne({ where: { name: roleName } });
 
       if (!role) {
