@@ -2,9 +2,9 @@ import { BadRequestException, Logger } from '@nestjs/common';
 import { CommandHandler, ICommandHandler, QueryBus } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { FindTagsByIdsQuery } from '@/modules/tags/queries';
 import { Article } from '../../entities/article.entity';
 import { CreateArticleCommand } from '../impl';
-import { FindTagsByIdsQuery } from '@/modules/tags/queries/impl';
 
 @CommandHandler(CreateArticleCommand)
 export class CreateArticleHandler implements ICommandHandler<CreateArticleCommand, Article> {
@@ -18,18 +18,21 @@ export class CreateArticleHandler implements ICommandHandler<CreateArticleComman
 
   async execute(command: CreateArticleCommand): Promise<Article> {
     const { dto } = command;
+    const { tagIds, ...articleDto } = dto;
 
     try {
-      const tags = await this.queryBus.execute(new FindTagsByIdsQuery(dto.tagIds ?? []));
+      const tags = await this.queryBus.execute(new FindTagsByIdsQuery(tagIds ?? []));
 
       return await this.repository.save(
         this.repository.create({
-          ...dto,
-          publishedAt: dto.published ? new Date(dto.publishedAt) : new Date(),
+          ...articleDto,
+          publishedAt: dto.publishedAt ? new Date(dto.publishedAt) : new Date(),
           tags
         })
       );
     } catch (error) {
+      if (error instanceof BadRequestException) throw error;
+
       this.logger.error(
         `Create article failed title="${dto.title}": ${error instanceof Error ? error.message : String(error)}`
       );

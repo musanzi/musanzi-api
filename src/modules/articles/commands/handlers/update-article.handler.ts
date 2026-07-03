@@ -19,14 +19,15 @@ export class UpdateArticleHandler implements ICommandHandler<UpdateArticleComman
 
   async execute(command: UpdateArticleCommand): Promise<Article> {
     const { dto, id } = command;
+    const { tagIds, ...articleDto } = dto;
 
     try {
       const article = await this.queryBus.execute(new FindArticleByIdQuery(id, true));
-      const tags = await this.queryBus.execute(new FindTagsByIdsQuery(dto.tagIds ?? []));
+      const tags = await this.queryBus.execute(new FindTagsByIdsQuery(tagIds ?? []));
 
       const updatedArticle = this.repository.merge(article, {
-        ...dto,
-        publishedAt: new Date(dto.publishedAt),
+        ...articleDto,
+        publishedAt: dto.publishedAt ? new Date(dto.publishedAt) : new Date(),
         tags
       });
 

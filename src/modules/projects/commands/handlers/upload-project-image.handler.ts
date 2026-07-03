@@ -24,23 +24,17 @@ export class UploadProjectImageHandler implements ICommandHandler<UploadProjectI
     const { file, id } = command;
 
     try {
-      if (!file) {
-        throw new BadRequestException('Image obligatoire');
-      }
-
       const project = await this.queryBus.execute(new FindProjectByIdQuery(id));
 
       if (project.image) {
         await promises.unlink(join(PROJECT_UPLOAD_DIR, project.image)).catch(() => undefined);
       }
 
-      await this.repository.update(id, {
-        image: file.filename
-      });
+      await this.repository.update(id, { image: file.filename });
 
       return await this.queryBus.execute(new FindProjectByIdQuery(id));
     } catch (error) {
-      if (error instanceof BadRequestException || error instanceof NotFoundException) throw error;
+      if (error instanceof NotFoundException) throw error;
 
       this.logger.error(
         `Upload project image failed id="${id}": ${error instanceof Error ? error.message : String(error)}`

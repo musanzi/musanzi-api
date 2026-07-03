@@ -1,7 +1,7 @@
 import { Logger, NotFoundException } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { Article } from '../../entities/article.entity';
 import { FindArticleBySlugQuery } from '../impl';
 
@@ -16,13 +16,11 @@ export class FindArticleBySlugHandler implements IQueryHandler<FindArticleBySlug
 
   async execute(query: FindArticleBySlugQuery): Promise<Article> {
     try {
-      return await this.repository
-        .createQueryBuilder('article')
-        .addSelect('article.content')
-        .leftJoinAndSelect('article.tags', 'tags')
-        .where('article.slug = :slug', { slug: query.slug })
-        .andWhere('article.published = true')
-        .getOneOrFail();
+      return await this.repository.findOneOrFail({
+        select: ['id', 'content', 'cover', 'summary', 'title', 'createdAt', 'publishedAt', 'updatedAt'],
+        where: { slug: query.slug, publishedAt: Not(IsNull()) },
+        relations: ['tags']
+      });
     } catch (error) {
       this.logger.error(
         `Find article by slug failed slug="${query.slug}": ${error instanceof Error ? error.message : String(error)}`

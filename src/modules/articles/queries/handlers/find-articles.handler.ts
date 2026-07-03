@@ -26,11 +26,11 @@ export class FindArticlesHandler implements IQueryHandler<FindArticlesQuery, [Ar
         .addOrderBy('article.updatedAt', 'DESC');
 
       if (!query.includeUnpublished) {
-        queryBuilder.andWhere('article.published = true');
+        queryBuilder.andWhere('article.publishedAt IS NOT NULL');
       } else if (status === 'draft') {
-        queryBuilder.andWhere('article.published = false');
+        queryBuilder.andWhere('article.publishedAt IS NULL');
       } else if (status === 'published') {
-        queryBuilder.andWhere('article.published = true');
+        queryBuilder.andWhere('article.publishedAt IS NOT NULL');
       }
 
       if (q) {

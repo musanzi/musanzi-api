@@ -18,9 +18,7 @@ export class CreateProjectHandler implements ICommandHandler<CreateProjectComman
     try {
       return await this.repository.save(
         this.repository.create({
-          ...command.dto,
-          image: command.dto.image ?? null,
-          links: command.dto.links ?? []
+          ...command.dto
         })
       );
     } catch (error) {

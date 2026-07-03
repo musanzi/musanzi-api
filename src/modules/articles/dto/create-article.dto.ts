@@ -1,4 +1,4 @@
-import { IsArray, IsBoolean, IsDateString, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsArray, IsDateString, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateArticleDto {
   @IsNotEmpty({ message: "Le titre de l'article est obligatoire" })
@@ -12,10 +12,6 @@ export class CreateArticleDto {
   @IsNotEmpty({ message: "Le contenu de l'article est obligatoire" })
   @IsString()
   content: string;
-
-  @IsOptional()
-  @IsBoolean()
-  published?: boolean;
 
   @IsOptional()
   @IsDateString()

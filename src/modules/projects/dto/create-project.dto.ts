@@ -12,10 +12,6 @@ export class CreateProjectDto {
   summary: string;
 
   @IsOptional()
-  @IsString()
-  image?: string | null;
-
-  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ProjectLinkDto)

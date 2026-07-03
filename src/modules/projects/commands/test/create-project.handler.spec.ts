@@ -29,17 +29,6 @@ describe('CreateProjectHandler', () => {
     loggerErrorSpy.mockRestore();
   });
 
-  it('creates a project with empty links and no image by default', async () => {
-    repository.create.mockReturnValueOnce(project);
-    repository.save.mockResolvedValueOnce(project);
-
-    const result = await handler.execute(new CreateProjectCommand(dto));
-
-    expect(result).toBe(project);
-    expect(repository.create).toHaveBeenCalledWith({ ...dto, image: null, links: [] });
-    expect(repository.save).toHaveBeenCalledWith(project);
-  });
-
   it('throws BadRequestException when project creation fails unexpectedly', async () => {
     repository.create.mockReturnValueOnce(project);
     repository.save.mockRejectedValueOnce(new Error('database unavailable'));

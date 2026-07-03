@@ -19,11 +19,8 @@ export class Article extends AbstractEntity {
   @Column({ type: 'varchar', nullable: true })
   cover: string | null;
 
-  @Column({ type: 'boolean', default: false })
-  published: boolean;
-
-  @Column({ type: 'timestamptz', nullable: true })
-  publishedAt: Date | null;
+  @Column({ type: 'timestamptz' })
+  publishedAt: Date;
 
   @ManyToMany(() => Tag, (tag) => tag.articles)
   @JoinTable({ name: 'article_tags' })

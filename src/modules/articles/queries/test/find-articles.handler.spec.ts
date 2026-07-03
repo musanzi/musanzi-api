@@ -22,7 +22,7 @@ describe('FindArticlesHandler', () => {
       title: 'Building APIs',
       slug: 'building-apis',
       summary: 'Summary',
-      published: true
+      publishedAt: new Date('2026-07-03T00:00:00.000Z')
     }
   ] as Article[];
 
@@ -63,7 +63,7 @@ describe('FindArticlesHandler', () => {
     expect(result).toEqual([articles, 1]);
     expect(repository.createQueryBuilder).toHaveBeenCalledWith('article');
     expect(queryBuilder.leftJoinAndSelect).toHaveBeenCalledWith('article.tags', 'tags');
-    expect(queryBuilder.andWhere).toHaveBeenCalledWith('article.published = true');
+    expect(queryBuilder.andWhere).toHaveBeenCalledWith('article.publishedAt IS NOT NULL');
     expect(queryBuilder.skip).not.toHaveBeenCalled();
     expect(queryBuilder.take).not.toHaveBeenCalled();
   });
@@ -85,7 +85,7 @@ describe('FindArticlesHandler', () => {
     );
 
     expect(result).toEqual([articles, 1]);
-    expect(queryBuilder.andWhere).toHaveBeenCalledWith('article.published = false');
+    expect(queryBuilder.andWhere).toHaveBeenCalledWith('article.publishedAt IS NULL');
     expect(queryBuilder.andWhere).toHaveBeenCalledWith(
       '(article.title ILIKE :q OR article.summary ILIKE :q OR article.content ILIKE :q)',
       { q: '%nestjs%' }

@@ -11,8 +11,8 @@ export class FindTagsByIdsHandler implements IQueryHandler<FindTagsByIdsQuery, T
     private readonly repository: Repository<Tag>
   ) {}
 
-  execute(query: FindTagsByIdsQuery): Promise<Tag[]> {
-    return this.repository.find({
+  async execute(query: FindTagsByIdsQuery): Promise<Tag[]> {
+    return await this.repository.find({
       where: { id: In(query.tagIds) }
     });
   }
