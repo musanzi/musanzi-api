@@ -24,23 +24,17 @@ export class UploadArticleCoverHandler implements ICommandHandler<UploadArticleC
     const { file, id } = command;
 
     try {
-      if (!file) {
-        throw new BadRequestException('Image de couverture obligatoire');
-      }
-
-      const article = await this.queryBus.execute<FindArticleByIdQuery, Article>(new FindArticleByIdQuery(id));
+      const article = await this.queryBus.execute(new FindArticleByIdQuery(id));
 
       if (article.cover) {
-        await promises.unlink(join(ARTICLE_UPLOAD_DIR, article.cover)).catch(() => undefined);
+        await promises.unlink(join(ARTICLE_UPLOAD_DIR, article.cover));
       }
 
-      await this.repository.update(id, {
-        cover: file.filename
-      });
+      await this.repository.update(id, { cover: file.filename });
 
       return await this.queryBus.execute(new FindArticleByIdQuery(id));
     } catch (error) {
-      if (error instanceof BadRequestException || error instanceof NotFoundException) throw error;
+      if (error instanceof NotFoundException) throw error;
 
       this.logger.error(
         `Upload article cover failed id="${id}": ${error instanceof Error ? error.message : String(error)}`

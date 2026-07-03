@@ -11,8 +11,8 @@ config({
 
 const seedUsers = [
   {
-    email: 'admin@admin.com',
-    name: 'Admin',
+    email: 'musanziw.m@gmail.com',
+    name: 'Wilfried M',
     password: process.env.ADMIN_PASSWORD,
     role: RoleEnum.ADMIN
   }

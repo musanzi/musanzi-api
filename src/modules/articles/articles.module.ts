@@ -5,10 +5,11 @@ import { CommandHandlers } from './commands/handlers';
 import { ArticlesController } from './controllers/articles.controller';
 import { Article } from './entities/article.entity';
 import { QueryHandlers } from './queries/handlers';
+import { ArticleSubscriber } from './subscribers/article.subscriber';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Article, Tag])],
   controllers: [ArticlesController],
-  providers: [...CommandHandlers, ...QueryHandlers]
+  providers: [ArticleSubscriber, ...CommandHandlers, ...QueryHandlers]
 })
 export class ArticlesModule {}

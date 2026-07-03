@@ -1,7 +1,6 @@
 import { AbstractEntity } from '@/modules/database/abstract.entity';
 import { Tag } from '@/modules/tags/entities/tag.entity';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
-import { ArticleContentFormat } from '../interfaces';
 
 @Entity()
 export class Article extends AbstractEntity {
@@ -16,9 +15,6 @@ export class Article extends AbstractEntity {
 
   @Column({ type: 'text', select: false })
   content: string;
-
-  @Column({ type: 'varchar', length: 20, default: 'mdx' })
-  contentFormat: ArticleContentFormat;
 
   @Column({ type: 'varchar', nullable: true })
   cover: string | null;
