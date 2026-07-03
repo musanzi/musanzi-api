@@ -11,12 +11,14 @@ export class ArticleSubscriber implements EntitySubscriberInterface<Article> {
   async beforeInsert(event: InsertEvent<Article>): Promise<void> {
     if (!event?.entity) return;
     const { title } = event.entity;
+    if (!title) return;
     event.entity.slug = slugify(title, { lower: true });
   }
 
   async beforeUpdate(event: UpdateEvent<Article>): Promise<void> {
     if (!event?.entity) return;
     const { title } = event.entity;
+    if (!title) return;
     event.entity.slug = slugify(title, { lower: true });
   }
 }
