@@ -17,24 +17,21 @@ export class IncrementArticleViewsHandler implements ICommandHandler<IncrementAr
 
   async execute(command: IncrementArticleViewsCommand): Promise<void> {
     try {
-      await this.repository.manager.transaction(async (manager) => {
-        const articleRepository = manager.getRepository(Article);
-        const article = await articleRepository
-          .createQueryBuilder('article')
-          .addSelect('article.viewHllRegisters')
-          .setLock('pessimistic_write')
-          .where('article.slug = :slug', { slug: command.slug })
-          .andWhere('article.publishedAt IS NOT NULL')
-          .getOne();
+      const article = await this.repository
+        .createQueryBuilder('article')
+        .addSelect('article.viewHllRegisters')
+        .setLock('pessimistic_write')
+        .where('article.slug = :slug', { slug: command.slug })
+        .andWhere('article.publishedAt IS NOT NULL')
+        .getOne();
 
-        if (!article) {
-          throw new NotFoundException('Article introuvable');
-        }
+      if (!article) {
+        throw new NotFoundException('Article introuvable');
+      }
 
-        const [viewHllRegisters, viewsCount] = addHyperLogLogValue(article.viewHllRegisters, command.viewerFingerprint);
+      const [viewHllRegisters, viewsCount] = addHyperLogLogValue(article.viewHllRegisters, command.viewerFingerprint);
 
-        await articleRepository.update(article.id, { viewHllRegisters, viewsCount });
-      });
+      await this.repository.update(article.id, { viewHllRegisters, viewsCount });
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
 
