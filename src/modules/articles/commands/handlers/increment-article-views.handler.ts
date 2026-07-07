@@ -20,7 +20,6 @@ export class IncrementArticleViewsHandler implements ICommandHandler<IncrementAr
       const article = await this.repository
         .createQueryBuilder('article')
         .addSelect('article.viewHllRegisters')
-        .setLock('pessimistic_write')
         .where('article.slug = :slug', { slug: command.slug })
         .andWhere('article.publishedAt IS NOT NULL')
         .getOne();
