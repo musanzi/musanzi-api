@@ -16,6 +16,7 @@ describe('FindArticleBySlugHandler', () => {
     slug: 'building-apis',
     summary: 'Summary',
     content: 'Content',
+    viewsCount: 7,
     publishedAt: new Date('2026-07-03T00:00:00.000Z')
   } as Article;
 
@@ -38,7 +39,7 @@ describe('FindArticleBySlugHandler', () => {
 
     expect(result).toBe(article);
     expect(repository.findOneOrFail).toHaveBeenCalledWith({
-      select: ['id', 'content', 'cover', 'summary', 'title', 'createdAt', 'publishedAt', 'updatedAt'],
+      select: ['id', 'content', 'cover', 'summary', 'title', 'createdAt', 'publishedAt', 'updatedAt', 'viewsCount'],
       where: {
         slug: 'building-apis',
         publishedAt: expect.any(Object)

@@ -22,6 +22,12 @@ export class Article extends AbstractEntity {
   @Column({ type: 'timestamptz' })
   publishedAt: Date;
 
+  @Column({ type: 'int', default: 0 })
+  viewsCount: number;
+
+  @Column({ type: 'jsonb', default: () => "'[]'::jsonb", select: false })
+  viewHllRegisters: number[];
+
   @ManyToMany(() => Tag, (tag) => tag.articles)
   @JoinTable({ name: 'article_tags' })
   tags: Tag[];

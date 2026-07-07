@@ -17,7 +17,7 @@ export class FindArticleBySlugHandler implements IQueryHandler<FindArticleBySlug
   async execute(query: FindArticleBySlugQuery): Promise<Article> {
     try {
       return await this.repository.findOneOrFail({
-        select: ['id', 'content', 'cover', 'summary', 'title', 'createdAt', 'publishedAt', 'updatedAt'],
+        select: ['id', 'content', 'cover', 'summary', 'title', 'createdAt', 'publishedAt', 'updatedAt', 'viewsCount'],
         where: { slug: query.slug, publishedAt: Not(IsNull()) },
         relations: ['tags']
       });

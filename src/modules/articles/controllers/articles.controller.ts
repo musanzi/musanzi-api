@@ -7,22 +7,26 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UploadedFile,
   UseInterceptors
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Request } from 'express';
 import { Public, Roles } from '@/modules/auth/decorators';
 import { RoleEnum } from '@/modules/auth/enums';
 import { createDiskUploadOptions } from '@/shared/helpers';
 import {
   CreateArticleCommand,
   DeleteArticleCommand,
+  IncrementArticleViewsCommand,
   UpdateArticleCommand,
   UploadArticleCoverCommand
 } from '../commands';
 import { CreateArticleDto, UpdateArticleDto } from '../dto';
 import { Article } from '../entities/article.entity';
+import { createArticleViewFingerprint } from '../helpers';
 import { IFilterArticles } from '../interfaces';
 import { FindArticleByIdQuery, FindArticleBySlugQuery, FindArticlesQuery } from '../queries';
 
@@ -59,7 +63,8 @@ export class ArticlesController {
 
   @Get(':slug')
   @Public()
-  findOne(@Param('slug') slug: string): Promise<Article> {
+  async findOne(@Param('slug') slug: string, @Req() request: Request): Promise<Article> {
+    await this.commandBus.execute(new IncrementArticleViewsCommand(slug, createArticleViewFingerprint(request)));
     return this.queryBus.execute(new FindArticleBySlugQuery(slug));
   }
 
