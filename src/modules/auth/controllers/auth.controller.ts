@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { User } from '../../users/entities/user.entity';
 import { IUserResponse } from '../../users/interfaces';
 import { UpdateUserDto } from '../../users/dto/update-user.dto';
@@ -10,7 +10,6 @@ import { ForgotPasswordDto } from '@/modules/auth/dto/forgot-password.dto';
 import { ResetPasswordDto } from '@/modules/auth/dto/reset-password.dto';
 import { Public } from '../decorators/public.decorator';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
-import { GoogleAuthGuard } from '../guards/google-auth.guard';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import {
   ForgotPasswordCommand,
@@ -20,7 +19,7 @@ import {
   UpdatePasswordCommand,
   UpdateProfileCommand
 } from '../commands';
-import { GoogleRedirectQuery, ProfileQuery, SignInQuery } from '../queries';
+import { ProfileQuery, SignInQuery } from '../queries';
 
 @Controller('auth')
 export class AuthController {
@@ -40,18 +39,6 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   signIn(@Req() req: Request): Promise<IUserResponse> {
     return this.queryBus.execute(new SignInQuery(req));
-  }
-
-  @Get('signin/google')
-  @Public()
-  @UseGuards(GoogleAuthGuard)
-  googleAuth(): void {}
-
-  @Get('google/redirect')
-  @Public()
-  @UseGuards(GoogleAuthGuard)
-  googleCallback(@Req() req: Request, @Res() res: Response): Promise<void> {
-    return this.queryBus.execute(new GoogleRedirectQuery(res, req.query.state));
   }
 
   @Post('signout')
