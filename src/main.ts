@@ -38,6 +38,7 @@ async function bootstrap(): Promise<void> {
   app.use(
     session({
       store: sessionStore,
+      name: 'sid',
       saveUninitialized: false,
       secret: process.env.SESSION_SECRET,
       resave: false,
@@ -45,7 +46,8 @@ async function bootstrap(): Promise<void> {
       cookie: {
         maxAge: +process.env.SESSION_MAX_AGE,
         httpOnly: true,
-        secure: isProduction
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax'
       }
     })
   );
