@@ -5,6 +5,8 @@ services:
       context: .
       target: production
     restart: unless-stopped
+    environment:
+      - NODE_ENV=production
     env_file:
       - .env
     volumes:

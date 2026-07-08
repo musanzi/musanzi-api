@@ -35,6 +35,7 @@ async function bootstrap(): Promise<void> {
       transform: true
     })
   );
+  console.log(isProduction);
   app.use(
     session({
       store: sessionStore,

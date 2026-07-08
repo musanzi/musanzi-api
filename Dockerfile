@@ -24,6 +24,4 @@ RUN pnpm prune --prod
 
 FROM build AS production
 
-ENV NODE_ENV=production
-
 CMD ["pnpm", "start:prod"]
