@@ -10,7 +10,6 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  const isProduction = process.env.NODE_ENV === 'production';
   const PgSessionStore = connectPgSimple(session);
   const sessionStore = new PgSessionStore({
     pool: new Pool({
@@ -44,9 +43,7 @@ async function bootstrap(): Promise<void> {
       rolling: true,
       cookie: {
         httpOnly: true,
-        maxAge: +process.env.SESSION_MAX_AGE,
-        secure: isProduction,
-        sameSite: isProduction ? 'none' : 'lax'
+        maxAge: +process.env.SESSION_MAX_AGE
       }
     })
   );
