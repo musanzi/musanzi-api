@@ -4,7 +4,6 @@ import { Request } from 'express';
 import { User } from '../../users/entities/user.entity';
 import { IUserResponse } from '../../users/interfaces';
 import { UpdateUserDto } from '../../users/dto/update-user.dto';
-import { SignUpDto } from '../dto/sign-up.dto';
 import { UpdatePasswordDto } from '@/modules/auth/dto/update-password.dto';
 import { ForgotPasswordDto } from '@/modules/auth/dto/forgot-password.dto';
 import { ResetPasswordDto } from '@/modules/auth/dto/reset-password.dto';
@@ -15,7 +14,6 @@ import {
   ForgotPasswordCommand,
   ResetPasswordCommand,
   SignOutCommand,
-  SignUpCommand,
   UpdatePasswordCommand,
   UpdateProfileCommand
 } from '../commands';
@@ -27,12 +25,6 @@ export class AuthController {
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus
   ) {}
-
-  @Post('signup')
-  @Public()
-  signUp(@Body() dto: SignUpDto): Promise<IUserResponse> {
-    return this.commandBus.execute(new SignUpCommand(dto));
-  }
 
   @Post('signin')
   @Public()
