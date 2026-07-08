@@ -22,7 +22,6 @@ async function bootstrap(): Promise<void> {
   //   tableName: 'session',
   //   createTableIfMissing: true
   // });
-
   app.useLogger(app.get(Logger));
   app.enableCors({
     credentials: true,
