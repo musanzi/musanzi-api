@@ -4,24 +4,24 @@ import { ValidationPipe } from '@nestjs/common';
 import session from 'express-session';
 import passport from 'passport';
 import { Logger } from 'nestjs-pino';
-import connectPgSimple from 'connect-pg-simple';
-import { Pool } from 'pg';
+// import connectPgSimple from 'connect-pg-simple';
+// import { Pool } from 'pg';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  const PgSessionStore = connectPgSimple(session);
-  const sessionStore = new PgSessionStore({
-    pool: new Pool({
-      host: process.env.DB_HOST,
-      port: +process.env.DB_PORT,
-      user: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME
-    }),
-    tableName: 'session',
-    createTableIfMissing: true
-  });
+  // const PgSessionStore = connectPgSimple(session);
+  // const sessionStore = new PgSessionStore({
+  //   pool: new Pool({
+  //     host: process.env.DB_HOST,
+  //     port: +process.env.DB_PORT,
+  //     user: process.env.DB_USERNAME,
+  //     password: process.env.DB_PASSWORD,
+  //     database: process.env.DB_NAME
+  //   }),
+  //   tableName: 'session',
+  //   createTableIfMissing: true
+  // });
 
   app.useLogger(app.get(Logger));
   app.enableCors({
@@ -36,7 +36,7 @@ async function bootstrap(): Promise<void> {
   );
   app.use(
     session({
-      store: sessionStore,
+      // store: sessionStore,
       saveUninitialized: false,
       secret: process.env.SESSION_SECRET,
       resave: false,
