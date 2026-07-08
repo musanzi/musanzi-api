@@ -39,7 +39,6 @@ async function bootstrap(): Promise<void> {
   app.use(
     session({
       store: sessionStore,
-      name: 'sid',
       saveUninitialized: false,
       secret: process.env.SESSION_SECRET,
       resave: false,
