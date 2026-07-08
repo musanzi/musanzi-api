@@ -46,8 +46,7 @@ async function bootstrap(): Promise<void> {
       cookie: {
         maxAge: +process.env.SESSION_MAX_AGE,
         httpOnly: true,
-        secure: isProduction,
-        sameSite: 'lax'
+        secure: isProduction
       }
     })
   );
