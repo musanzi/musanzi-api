@@ -25,13 +25,12 @@ export class UpdateArticleHandler implements ICommandHandler<UpdateArticleComman
       const article = await this.queryBus.execute(new FindArticleByIdQuery(id, true));
       const tags = await this.queryBus.execute(new FindTagsByIdsQuery(tagIds ?? []));
 
-      const updatedArticle = this.repository.merge(article, {
+      return await this.repository.save({
+        ...article,
         ...articleDto,
         publishedAt: dto.publishedAt ? new Date(dto.publishedAt) : new Date(),
         tags
       });
-
-      return await this.repository.save(updatedArticle);
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
 
