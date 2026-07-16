@@ -1,4 +1,4 @@
-name: musanzi API CI
+name: Deploy musanzi API
 
 on:
   push:
@@ -13,39 +13,10 @@ permissions:
   contents: read
 
 jobs:
-  ci:
-    name: Test and build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-        with:
-          version: 11.5.0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Lint application
-        run: pnpm lint
-
-      - name: Format application
-        run: pnpm format
-
   deploy:
     name: Deploy to VPS
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: ci
     environment: production
 
     steps:

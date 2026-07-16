@@ -17,7 +17,8 @@
     "db:migrate": "pnpm typeorm migration:generate ./src/modules/database/migrations/$name -d ./src/modules/database/orm.config.ts",
     "db:up": "pnpm typeorm migration:run -d ./src/modules/database/orm.config.ts",
     "db:down": "pnpm typeorm migration:revert -d ./src/modules/database/orm.config.ts",
-    "db:seed": "node dist/src/modules/database/seeds/index.js"
+    "db:seed": "node dist/src/modules/database/seeds/index.js",
+    "prepare": "husky"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^2.0.2",
@@ -59,6 +60,8 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
     "@eslint/js": "^9.38.0",
     "@faker-js/faker": "^10.1.0",
     "@nestjs/cli": "^11.0.10",
