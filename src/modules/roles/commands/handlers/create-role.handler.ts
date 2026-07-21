@@ -3,10 +3,10 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Role } from '../../entities/role.entity';
-import { CreateRoleCommand } from '../impl';
+import { CreateRole } from '../impl';
 
-@CommandHandler(CreateRoleCommand)
-export class CreateRoleHandler implements ICommandHandler<CreateRoleCommand, Role> {
+@CommandHandler(CreateRole)
+export class CreateRoleHandler implements ICommandHandler<CreateRole, Role> {
   private readonly logger = new Logger(CreateRoleHandler.name);
 
   constructor(
@@ -14,7 +14,7 @@ export class CreateRoleHandler implements ICommandHandler<CreateRoleCommand, Rol
     private readonly repository: Repository<Role>
   ) {}
 
-  async execute(command: CreateRoleCommand): Promise<Role> {
+  async execute(command: CreateRole): Promise<Role> {
     const { name } = command.dto;
 
     try {

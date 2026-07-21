@@ -3,11 +3,11 @@ import { CommandHandler, ICommandHandler, QueryBus } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Article } from '../../entities/article.entity';
-import { FindArticleByIdQuery } from '../../queries';
-import { DeleteArticleCommand } from '../impl';
+import { FindArticleById } from '../../queries';
+import { DeleteArticle } from '../impl';
 
-@CommandHandler(DeleteArticleCommand)
-export class DeleteArticleHandler implements ICommandHandler<DeleteArticleCommand, void> {
+@CommandHandler(DeleteArticle)
+export class DeleteArticleHandler implements ICommandHandler<DeleteArticle, void> {
   private readonly logger = new Logger(DeleteArticleHandler.name);
 
   constructor(
@@ -16,9 +16,9 @@ export class DeleteArticleHandler implements ICommandHandler<DeleteArticleComman
     private readonly queryBus: QueryBus
   ) {}
 
-  async execute(command: DeleteArticleCommand): Promise<void> {
+  async execute(command: DeleteArticle): Promise<void> {
     try {
-      await this.queryBus.execute(new FindArticleByIdQuery(command.id));
+      await this.queryBus.execute(new FindArticleById(command.id));
       await this.repository.delete(command.id);
     } catch (error) {
       if (error instanceof NotFoundException) throw error;

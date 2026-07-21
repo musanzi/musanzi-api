@@ -1,5 +1,5 @@
 import { IFilterTags } from '../../interfaces';
 
-export class FindTagsQuery {
+export class FindTags {
   constructor(public readonly params: IFilterTags) {}
 }

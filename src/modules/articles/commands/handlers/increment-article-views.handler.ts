@@ -4,10 +4,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Article } from '../../entities/article.entity';
 import { addHyperLogLogValue } from '../../helpers';
-import { IncrementArticleViewsCommand } from '../impl';
+import { IncrementArticleViews } from '../impl';
 
-@CommandHandler(IncrementArticleViewsCommand)
-export class IncrementArticleViewsHandler implements ICommandHandler<IncrementArticleViewsCommand, void> {
+@CommandHandler(IncrementArticleViews)
+export class IncrementArticleViewsHandler implements ICommandHandler<IncrementArticleViews, void> {
   private readonly logger = new Logger(IncrementArticleViewsHandler.name);
 
   constructor(
@@ -15,7 +15,7 @@ export class IncrementArticleViewsHandler implements ICommandHandler<IncrementAr
     private readonly repository: Repository<Article>
   ) {}
 
-  async execute(command: IncrementArticleViewsCommand): Promise<void> {
+  async execute(command: IncrementArticleViews): Promise<void> {
     try {
       const article = await this.repository
         .createQueryBuilder('article')

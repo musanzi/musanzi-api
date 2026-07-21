@@ -3,11 +3,11 @@ import { CommandHandler, ICommandHandler, QueryBus } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { Tag } from '../../entities/tag.entity';
-import { FindTagByIdQuery } from '../../queries';
-import { UpdateTagCommand } from '../impl';
+import { FindTagById } from '../../queries';
+import { UpdateTag } from '../impl';
 
-@CommandHandler(UpdateTagCommand)
-export class UpdateTagHandler implements ICommandHandler<UpdateTagCommand, Tag> {
+@CommandHandler(UpdateTag)
+export class UpdateTagHandler implements ICommandHandler<UpdateTag, Tag> {
   private readonly logger = new Logger(UpdateTagHandler.name);
 
   constructor(
@@ -16,11 +16,11 @@ export class UpdateTagHandler implements ICommandHandler<UpdateTagCommand, Tag> 
     private readonly queryBus: QueryBus
   ) {}
 
-  async execute(command: UpdateTagCommand): Promise<Tag> {
+  async execute(command: UpdateTag): Promise<Tag> {
     const { dto, id } = command;
 
     try {
-      const tag = await this.queryBus.execute<FindTagByIdQuery, Tag>(new FindTagByIdQuery(id));
+      const tag = await this.queryBus.execute<FindTagById, Tag>(new FindTagById(id));
 
       if (dto.name) {
         const existingTag = await this.repository.findOne({

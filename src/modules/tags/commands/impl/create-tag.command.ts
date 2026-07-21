@@ -1,5 +1,5 @@
 import { CreateTagDto } from '../../dto';
 
-export class CreateTagCommand {
+export class CreateTag {
   constructor(public readonly dto: CreateTagDto) {}
 }

@@ -1,3 +1,3 @@
-export class DeleteArticleCommand {
+export class DeleteArticle {
   constructor(public readonly id: string) {}
 }

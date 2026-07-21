@@ -3,11 +3,11 @@ import { CommandHandler, ICommandHandler, QueryBus } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Project } from '../../entities/project.entity';
-import { FindProjectByIdQuery } from '../../queries';
-import { UpdateProjectCommand } from '../impl';
+import { FindProjectById } from '../../queries';
+import { UpdateProject } from '../impl';
 
-@CommandHandler(UpdateProjectCommand)
-export class UpdateProjectHandler implements ICommandHandler<UpdateProjectCommand, Project> {
+@CommandHandler(UpdateProject)
+export class UpdateProjectHandler implements ICommandHandler<UpdateProject, Project> {
   private readonly logger = new Logger(UpdateProjectHandler.name);
 
   constructor(
@@ -16,11 +16,11 @@ export class UpdateProjectHandler implements ICommandHandler<UpdateProjectComman
     private readonly queryBus: QueryBus
   ) {}
 
-  async execute(command: UpdateProjectCommand): Promise<Project> {
+  async execute(command: UpdateProject): Promise<Project> {
     const { dto, id } = command;
 
     try {
-      const project = await this.queryBus.execute(new FindProjectByIdQuery(id));
+      const project = await this.queryBus.execute(new FindProjectById(id));
 
       return await this.repository.save(this.repository.merge(project, dto));
     } catch (error) {

@@ -3,11 +3,11 @@ import { CommandHandler, ICommandHandler, QueryBus } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Tag } from '../../entities/tag.entity';
-import { FindTagByIdQuery } from '../../queries';
-import { DeleteTagCommand } from '../impl';
+import { FindTagById } from '../../queries';
+import { DeleteTag } from '../impl';
 
-@CommandHandler(DeleteTagCommand)
-export class DeleteTagHandler implements ICommandHandler<DeleteTagCommand, void> {
+@CommandHandler(DeleteTag)
+export class DeleteTagHandler implements ICommandHandler<DeleteTag, void> {
   private readonly logger = new Logger(DeleteTagHandler.name);
 
   constructor(
@@ -16,9 +16,9 @@ export class DeleteTagHandler implements ICommandHandler<DeleteTagCommand, void>
     private readonly queryBus: QueryBus
   ) {}
 
-  async execute(command: DeleteTagCommand): Promise<void> {
+  async execute(command: DeleteTag): Promise<void> {
     try {
-      await this.queryBus.execute(new FindTagByIdQuery(command.id));
+      await this.queryBus.execute(new FindTagById(command.id));
       await this.repository.delete(command.id);
     } catch (error) {
       if (error instanceof NotFoundException) throw error;

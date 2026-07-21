@@ -5,13 +5,13 @@ import { promises } from 'fs';
 import { join } from 'path';
 import { Repository } from 'typeorm';
 import { Project } from '../../entities/project.entity';
-import { FindProjectByIdQuery } from '../../queries';
-import { UploadProjectImageCommand } from '../impl';
+import { FindProjectById } from '../../queries';
+import { UploadProjectImage } from '../impl';
 
 const PROJECT_UPLOAD_DIR = './uploads/projects';
 
-@CommandHandler(UploadProjectImageCommand)
-export class UploadProjectImageHandler implements ICommandHandler<UploadProjectImageCommand, Project> {
+@CommandHandler(UploadProjectImage)
+export class UploadProjectImageHandler implements ICommandHandler<UploadProjectImage, Project> {
   private readonly logger = new Logger(UploadProjectImageHandler.name);
 
   constructor(
@@ -20,11 +20,11 @@ export class UploadProjectImageHandler implements ICommandHandler<UploadProjectI
     private readonly queryBus: QueryBus
   ) {}
 
-  async execute(command: UploadProjectImageCommand): Promise<Project> {
+  async execute(command: UploadProjectImage): Promise<Project> {
     const { file, id } = command;
 
     try {
-      const project = await this.queryBus.execute(new FindProjectByIdQuery(id));
+      const project = await this.queryBus.execute(new FindProjectById(id));
 
       if (project.image) {
         await promises.unlink(join(PROJECT_UPLOAD_DIR, project.image)).catch(() => undefined);
@@ -32,7 +32,7 @@ export class UploadProjectImageHandler implements ICommandHandler<UploadProjectI
 
       await this.repository.update(id, { image: file.filename });
 
-      return await this.queryBus.execute(new FindProjectByIdQuery(id));
+      return await this.queryBus.execute(new FindProjectById(id));
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
 

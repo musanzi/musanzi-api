@@ -1,4 +1,4 @@
-import { AbstractEntity } from '@/modules/database/abstract.entity';
+import { AbstractEntity } from '@/shared/abstracts';
 import { Tag } from '@/modules/tags/entities/tag.entity';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 

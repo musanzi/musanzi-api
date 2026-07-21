@@ -10,63 +10,58 @@ import {
   UploadedFile,
   UseInterceptors
 } from '@nestjs/common';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Public, Roles } from '@/modules/auth/decorators';
-import { RoleEnum } from '@/modules/auth/enums';
+import { Public, HasRoles } from '@/modules/auth/decorators';
+import { Roles } from '@/modules/auth/enums';
+import { AbstractController } from '@/shared/abstracts';
 import { createDiskUploadOptions } from '@/shared/helpers';
 import {
-  CreateProjectCommand,
-  DeleteProjectCommand,
-  UpdateProjectCommand,
-  UploadProjectImageCommand
+  CreateProject,
+  DeleteProject,
+  UpdateProject,
+  UploadProjectImage
 } from '../commands';
 import { CreateProjectDto, UpdateProjectDto } from '../dto';
 import { Project } from '../entities/project.entity';
 import { IFilterProjects } from '../interfaces';
-import { FindProjectByIdQuery, FindProjectsQuery } from '../queries';
+import { FindProjectById, FindProjects } from '../queries';
 
 @Controller('projects')
-export class ProjectsController {
-  constructor(
-    private readonly commandBus: CommandBus,
-    private readonly queryBus: QueryBus
-  ) {}
-
+export class ProjectsController extends AbstractController {
   @Post()
-  @Roles([RoleEnum.ADMIN])
+  @HasRoles([Roles.ADMIN])
   create(@Body() dto: CreateProjectDto): Promise<Project> {
-    return this.commandBus.execute(new CreateProjectCommand(dto));
+    return this.commandBus.execute(new CreateProject(dto));
   }
 
   @Get()
   @Public()
   findAll(@Query() query: IFilterProjects): Promise<[Project[], number]> {
-    return this.queryBus.execute(new FindProjectsQuery(query));
+    return this.queryBus.execute(new FindProjects(query));
   }
 
   @Get(':id')
   @Public()
   findOne(@Param('id') id: string): Promise<Project> {
-    return this.queryBus.execute(new FindProjectByIdQuery(id));
+    return this.queryBus.execute(new FindProjectById(id));
   }
 
   @Patch(':id')
-  @Roles([RoleEnum.ADMIN])
+  @HasRoles([Roles.ADMIN])
   update(@Param('id') id: string, @Body() dto: UpdateProjectDto): Promise<Project> {
-    return this.commandBus.execute(new UpdateProjectCommand(id, dto));
+    return this.commandBus.execute(new UpdateProject(id, dto));
   }
 
   @Post(':id/image')
-  @Roles([RoleEnum.ADMIN])
+  @HasRoles([Roles.ADMIN])
   @UseInterceptors(FileInterceptor('image', createDiskUploadOptions('./uploads/projects')))
   uploadImage(@Param('id') id: string, @UploadedFile() file: Express.Multer.File): Promise<Project> {
-    return this.commandBus.execute(new UploadProjectImageCommand(id, file));
+    return this.commandBus.execute(new UploadProjectImage(id, file));
   }
 
   @Delete(':id')
-  @Roles([RoleEnum.ADMIN])
+  @HasRoles([Roles.ADMIN])
   remove(@Param('id') id: string): Promise<void> {
-    return this.commandBus.execute(new DeleteProjectCommand(id));
+    return this.commandBus.execute(new DeleteProject(id));
   }
 }

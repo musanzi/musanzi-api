@@ -3,11 +3,11 @@ import { CommandHandler, ICommandHandler, QueryBus } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Project } from '../../entities/project.entity';
-import { FindProjectByIdQuery } from '../../queries';
-import { DeleteProjectCommand } from '../impl';
+import { FindProjectById } from '../../queries';
+import { DeleteProject } from '../impl';
 
-@CommandHandler(DeleteProjectCommand)
-export class DeleteProjectHandler implements ICommandHandler<DeleteProjectCommand, void> {
+@CommandHandler(DeleteProject)
+export class DeleteProjectHandler implements ICommandHandler<DeleteProject, void> {
   private readonly logger = new Logger(DeleteProjectHandler.name);
 
   constructor(
@@ -16,9 +16,9 @@ export class DeleteProjectHandler implements ICommandHandler<DeleteProjectComman
     private readonly queryBus: QueryBus
   ) {}
 
-  async execute(command: DeleteProjectCommand): Promise<void> {
+  async execute(command: DeleteProject): Promise<void> {
     try {
-      await this.queryBus.execute(new FindProjectByIdQuery(command.id));
+      await this.queryBus.execute(new FindProjectById(command.id));
 
       await this.repository.delete(command.id);
     } catch (error) {

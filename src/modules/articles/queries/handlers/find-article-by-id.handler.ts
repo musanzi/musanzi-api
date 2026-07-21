@@ -3,10 +3,10 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Article } from '../../entities/article.entity';
-import { FindArticleByIdQuery } from '../impl';
+import { FindArticleById } from '../impl';
 
-@QueryHandler(FindArticleByIdQuery)
-export class FindArticleByIdHandler implements IQueryHandler<FindArticleByIdQuery, Article> {
+@QueryHandler(FindArticleById)
+export class FindArticleByIdHandler implements IQueryHandler<FindArticleById, Article> {
   private readonly logger = new Logger(FindArticleByIdHandler.name);
 
   constructor(
@@ -14,7 +14,7 @@ export class FindArticleByIdHandler implements IQueryHandler<FindArticleByIdQuer
     private readonly repository: Repository<Article>
   ) {}
 
-  async execute(query: FindArticleByIdQuery): Promise<Article> {
+  async execute(query: FindArticleById): Promise<Article> {
     try {
       const queryBuilder = this.repository
         .createQueryBuilder('article')

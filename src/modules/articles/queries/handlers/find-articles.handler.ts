@@ -4,10 +4,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { parsePaginationParams } from '@/shared/helpers';
 import { Article } from '../../entities/article.entity';
-import { FindArticlesQuery } from '../impl';
+import { FindArticles } from '../impl';
 
-@QueryHandler(FindArticlesQuery)
-export class FindArticlesHandler implements IQueryHandler<FindArticlesQuery, [Article[], number]> {
+@QueryHandler(FindArticles)
+export class FindArticlesHandler implements IQueryHandler<FindArticles, [Article[], number]> {
   private readonly logger = new Logger(FindArticlesHandler.name);
 
   constructor(
@@ -15,7 +15,7 @@ export class FindArticlesHandler implements IQueryHandler<FindArticlesQuery, [Ar
     private readonly repository: Repository<Article>
   ) {}
 
-  async execute(query: FindArticlesQuery): Promise<[Article[], number]> {
+  async execute(query: FindArticles): Promise<[Article[], number]> {
     try {
       const { q, tagId, status } = query.params;
       const queryBuilder = this.repository

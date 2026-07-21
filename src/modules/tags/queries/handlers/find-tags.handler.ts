@@ -4,10 +4,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { parsePaginationParams } from '@/shared/helpers';
 import { Tag } from '../../entities/tag.entity';
-import { FindTagsQuery } from '../impl';
+import { FindTags } from '../impl';
 
-@QueryHandler(FindTagsQuery)
-export class FindTagsHandler implements IQueryHandler<FindTagsQuery, [Tag[], number]> {
+@QueryHandler(FindTags)
+export class FindTagsHandler implements IQueryHandler<FindTags, [Tag[], number]> {
   private readonly logger = new Logger(FindTagsHandler.name);
 
   constructor(
@@ -15,7 +15,7 @@ export class FindTagsHandler implements IQueryHandler<FindTagsQuery, [Tag[], num
     private readonly repository: Repository<Tag>
   ) {}
 
-  async execute(query: FindTagsQuery): Promise<[Tag[], number]> {
+  async execute(query: FindTags): Promise<[Tag[], number]> {
     try {
       const { q } = query.params;
 

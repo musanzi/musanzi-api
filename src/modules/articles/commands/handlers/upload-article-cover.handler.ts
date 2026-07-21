@@ -5,13 +5,13 @@ import { promises } from 'fs';
 import { join } from 'path';
 import { Repository } from 'typeorm';
 import { Article } from '../../entities/article.entity';
-import { FindArticleByIdQuery } from '../../queries';
-import { UploadArticleCoverCommand } from '../impl';
+import { FindArticleById } from '../../queries';
+import { UploadArticleCover } from '../impl';
 
 const ARTICLE_UPLOAD_DIR = './uploads/articles';
 
-@CommandHandler(UploadArticleCoverCommand)
-export class UploadArticleCoverHandler implements ICommandHandler<UploadArticleCoverCommand, Article> {
+@CommandHandler(UploadArticleCover)
+export class UploadArticleCoverHandler implements ICommandHandler<UploadArticleCover, Article> {
   private readonly logger = new Logger(UploadArticleCoverHandler.name);
 
   constructor(
@@ -20,11 +20,11 @@ export class UploadArticleCoverHandler implements ICommandHandler<UploadArticleC
     private readonly queryBus: QueryBus
   ) {}
 
-  async execute(command: UploadArticleCoverCommand): Promise<Article> {
+  async execute(command: UploadArticleCover): Promise<Article> {
     const { file, id } = command;
 
     try {
-      const article = await this.queryBus.execute(new FindArticleByIdQuery(id));
+      const article = await this.queryBus.execute(new FindArticleById(id));
 
       if (article.cover) {
         await promises.unlink(join(ARTICLE_UPLOAD_DIR, article.cover));
@@ -32,7 +32,7 @@ export class UploadArticleCoverHandler implements ICommandHandler<UploadArticleC
 
       await this.repository.update(id, { cover: file.filename });
 
-      return await this.queryBus.execute(new FindArticleByIdQuery(id));
+      return await this.queryBus.execute(new FindArticleById(id));
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
 

@@ -3,10 +3,10 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Tag } from '../../entities/tag.entity';
-import { FindTagByIdQuery } from '../impl';
+import { FindTagById } from '../impl';
 
-@QueryHandler(FindTagByIdQuery)
-export class FindTagByIdHandler implements IQueryHandler<FindTagByIdQuery, Tag> {
+@QueryHandler(FindTagById)
+export class FindTagByIdHandler implements IQueryHandler<FindTagById, Tag> {
   private readonly logger = new Logger(FindTagByIdHandler.name);
 
   constructor(
@@ -14,7 +14,7 @@ export class FindTagByIdHandler implements IQueryHandler<FindTagByIdQuery, Tag> 
     private readonly repository: Repository<Tag>
   ) {}
 
-  async execute(query: FindTagByIdQuery): Promise<Tag> {
+  async execute(query: FindTagById): Promise<Tag> {
     try {
       return await this.repository.findOneOrFail({
         where: { id: query.id }

@@ -1,47 +1,42 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { Public, Roles } from '@/modules/auth/decorators';
-import { RoleEnum } from '@/modules/auth/enums';
-import { CreateTagCommand, DeleteTagCommand, UpdateTagCommand } from '../commands';
+import { Public, HasRoles } from '@/modules/auth/decorators';
+import { Roles } from '@/modules/auth/enums';
+import { AbstractController } from '@/shared/abstracts';
+import { CreateTag, DeleteTag, UpdateTag } from '../commands';
 import { CreateTagDto, UpdateTagDto } from '../dto';
 import { Tag } from '../entities/tag.entity';
 import { IFilterTags } from '../interfaces';
-import { FindTagByIdQuery, FindTagsQuery } from '../queries';
+import { FindTagById, FindTags } from '../queries';
 
 @Controller('tags')
-export class TagsController {
-  constructor(
-    private readonly commandBus: CommandBus,
-    private readonly queryBus: QueryBus
-  ) {}
-
+export class TagsController extends AbstractController {
   @Post()
-  @Roles([RoleEnum.ADMIN])
+  @HasRoles([Roles.ADMIN])
   create(@Body() dto: CreateTagDto): Promise<Tag> {
-    return this.commandBus.execute(new CreateTagCommand(dto));
+    return this.commandBus.execute(new CreateTag(dto));
   }
 
   @Get()
   @Public()
   findAll(@Query() query: IFilterTags): Promise<[Tag[], number]> {
-    return this.queryBus.execute(new FindTagsQuery(query));
+    return this.queryBus.execute(new FindTags(query));
   }
 
   @Get(':id')
   @Public()
   findOne(@Param('id') id: string): Promise<Tag> {
-    return this.queryBus.execute(new FindTagByIdQuery(id));
+    return this.queryBus.execute(new FindTagById(id));
   }
 
   @Patch(':id')
-  @Roles([RoleEnum.ADMIN])
+  @HasRoles([Roles.ADMIN])
   update(@Param('id') id: string, @Body() dto: UpdateTagDto): Promise<Tag> {
-    return this.commandBus.execute(new UpdateTagCommand(id, dto));
+    return this.commandBus.execute(new UpdateTag(id, dto));
   }
 
   @Delete(':id')
-  @Roles([RoleEnum.ADMIN])
+  @HasRoles([Roles.ADMIN])
   remove(@Param('id') id: string): Promise<void> {
-    return this.commandBus.execute(new DeleteTagCommand(id));
+    return this.commandBus.execute(new DeleteTag(id));
   }
 }

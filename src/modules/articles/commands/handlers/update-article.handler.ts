@@ -3,12 +3,12 @@ import { CommandHandler, ICommandHandler, QueryBus } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Article } from '../../entities/article.entity';
-import { FindArticleByIdQuery } from '../../queries';
-import { UpdateArticleCommand } from '../impl';
-import { FindTagsByIdsQuery } from '@/modules/tags/queries';
+import { FindArticleById } from '../../queries';
+import { UpdateArticle } from '../impl';
+import { FindTagsByIds } from '@/modules/tags/queries';
 
-@CommandHandler(UpdateArticleCommand)
-export class UpdateArticleHandler implements ICommandHandler<UpdateArticleCommand, Article> {
+@CommandHandler(UpdateArticle)
+export class UpdateArticleHandler implements ICommandHandler<UpdateArticle, Article> {
   private readonly logger = new Logger(UpdateArticleHandler.name);
 
   constructor(
@@ -17,13 +17,13 @@ export class UpdateArticleHandler implements ICommandHandler<UpdateArticleComman
     private readonly queryBus: QueryBus
   ) {}
 
-  async execute(command: UpdateArticleCommand): Promise<Article> {
+  async execute(command: UpdateArticle): Promise<Article> {
     const { dto, id } = command;
     const { tagIds, ...articleDto } = dto;
 
     try {
-      const article = await this.queryBus.execute(new FindArticleByIdQuery(id, true));
-      const tags = await this.queryBus.execute(new FindTagsByIdsQuery(tagIds ?? []));
+      const article = await this.queryBus.execute(new FindArticleById(id, true));
+      const tags = await this.queryBus.execute(new FindTagsByIds(tagIds ?? []));
 
       return await this.repository.save({
         ...article,

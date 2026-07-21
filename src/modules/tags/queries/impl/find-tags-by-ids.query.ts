@@ -1,3 +1,3 @@
-export class FindTagsByIdsQuery {
+export class FindTagsByIds {
   constructor(public readonly tagIds: string[]) {}
 }

@@ -1,4 +1,4 @@
-export class FindArticleByIdQuery {
+export class FindArticleById {
   constructor(
     public readonly id: string,
     public readonly includeContent = false

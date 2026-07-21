@@ -3,7 +3,7 @@ import { User } from '@/modules/users/entities/user.entity';
 import { IUserResponse } from '@/modules/users/interfaces';
 import { UpdatePasswordDto } from '../../dto/update-password.dto';
 
-export class UpdatePasswordCommand extends Command<IUserResponse> {
+export class UpdatePassword extends Command<IUserResponse> {
   constructor(
     public readonly currentUser: User,
     public readonly dto: UpdatePasswordDto

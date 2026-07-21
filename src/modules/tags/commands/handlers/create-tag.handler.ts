@@ -3,10 +3,10 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Tag } from '../../entities/tag.entity';
-import { CreateTagCommand } from '../impl';
+import { CreateTag } from '../impl';
 
-@CommandHandler(CreateTagCommand)
-export class CreateTagHandler implements ICommandHandler<CreateTagCommand, Tag> {
+@CommandHandler(CreateTag)
+export class CreateTagHandler implements ICommandHandler<CreateTag, Tag> {
   private readonly logger = new Logger(CreateTagHandler.name);
 
   constructor(
@@ -14,7 +14,7 @@ export class CreateTagHandler implements ICommandHandler<CreateTagCommand, Tag> 
     private readonly repository: Repository<Tag>
   ) {}
 
-  async execute(command: CreateTagCommand): Promise<Tag> {
+  async execute(command: CreateTag): Promise<Tag> {
     const { name } = command.dto;
 
     try {

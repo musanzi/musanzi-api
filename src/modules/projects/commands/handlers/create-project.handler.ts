@@ -3,10 +3,10 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Project } from '../../entities/project.entity';
-import { CreateProjectCommand } from '../impl';
+import { CreateProject } from '../impl';
 
-@CommandHandler(CreateProjectCommand)
-export class CreateProjectHandler implements ICommandHandler<CreateProjectCommand, Project> {
+@CommandHandler(CreateProject)
+export class CreateProjectHandler implements ICommandHandler<CreateProject, Project> {
   private readonly logger = new Logger(CreateProjectHandler.name);
 
   constructor(
@@ -14,7 +14,7 @@ export class CreateProjectHandler implements ICommandHandler<CreateProjectComman
     private readonly repository: Repository<Project>
   ) {}
 
-  async execute(command: CreateProjectCommand): Promise<Project> {
+  async execute(command: CreateProject): Promise<Project> {
     try {
       return await this.repository.save(
         this.repository.create({

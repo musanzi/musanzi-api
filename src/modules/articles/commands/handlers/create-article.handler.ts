@@ -2,12 +2,12 @@ import { BadRequestException, Logger } from '@nestjs/common';
 import { CommandHandler, ICommandHandler, QueryBus } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { FindTagsByIdsQuery } from '@/modules/tags/queries';
+import { FindTagsByIds } from '@/modules/tags/queries';
 import { Article } from '../../entities/article.entity';
-import { CreateArticleCommand } from '../impl';
+import { CreateArticle } from '../impl';
 
-@CommandHandler(CreateArticleCommand)
-export class CreateArticleHandler implements ICommandHandler<CreateArticleCommand, Article> {
+@CommandHandler(CreateArticle)
+export class CreateArticleHandler implements ICommandHandler<CreateArticle, Article> {
   private readonly logger = new Logger(CreateArticleHandler.name);
 
   constructor(
@@ -16,12 +16,12 @@ export class CreateArticleHandler implements ICommandHandler<CreateArticleComman
     private readonly queryBus: QueryBus
   ) {}
 
-  async execute(command: CreateArticleCommand): Promise<Article> {
+  async execute(command: CreateArticle): Promise<Article> {
     const { dto } = command;
     const { tagIds, ...articleDto } = dto;
 
     try {
-      const tags = await this.queryBus.execute(new FindTagsByIdsQuery(tagIds ?? []));
+      const tags = await this.queryBus.execute(new FindTagsByIds(tagIds ?? []));
 
       return await this.repository.save(
         this.repository.create({

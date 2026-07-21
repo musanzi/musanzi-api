@@ -11,79 +11,74 @@ import {
   UploadedFile,
   UseInterceptors
 } from '@nestjs/common';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
-import { Public, Roles } from '@/modules/auth/decorators';
-import { RoleEnum } from '@/modules/auth/enums';
+import { Public, HasRoles } from '@/modules/auth/decorators';
+import { Roles } from '@/modules/auth/enums';
+import { AbstractController } from '@/shared/abstracts';
 import { createDiskUploadOptions } from '@/shared/helpers';
 import {
-  CreateArticleCommand,
-  DeleteArticleCommand,
-  IncrementArticleViewsCommand,
-  UpdateArticleCommand,
-  UploadArticleCoverCommand
+  CreateArticle,
+  DeleteArticle,
+  IncrementArticleViews,
+  UpdateArticle,
+  UploadArticleCover
 } from '../commands';
 import { CreateArticleDto, UpdateArticleDto } from '../dto';
 import { Article } from '../entities/article.entity';
 import { createArticleViewFingerprint } from '../helpers';
 import { IFilterArticles } from '../interfaces';
-import { FindArticleByIdQuery, FindArticleBySlugQuery, FindArticlesQuery } from '../queries';
+import { FindArticleById, FindArticleBySlug, FindArticles } from '../queries';
 
 @Controller('articles')
-export class ArticlesController {
-  constructor(
-    private readonly commandBus: CommandBus,
-    private readonly queryBus: QueryBus
-  ) {}
-
+export class ArticlesController extends AbstractController {
   @Post()
-  @Roles([RoleEnum.ADMIN])
+  @HasRoles([Roles.ADMIN])
   create(@Body() dto: CreateArticleDto): Promise<Article> {
-    return this.commandBus.execute(new CreateArticleCommand(dto));
+    return this.commandBus.execute(new CreateArticle(dto));
   }
 
   @Get()
   @Public()
   findAll(@Query() query: IFilterArticles): Promise<[Article[], number]> {
-    return this.queryBus.execute(new FindArticlesQuery(query));
+    return this.queryBus.execute(new FindArticles(query));
   }
 
   @Get('admin')
-  @Roles([RoleEnum.ADMIN])
+  @HasRoles([Roles.ADMIN])
   findAllAdmin(@Query() query: IFilterArticles): Promise<[Article[], number]> {
-    return this.queryBus.execute(new FindArticlesQuery(query, true));
+    return this.queryBus.execute(new FindArticles(query, true));
   }
 
   @Get('admin/:id')
-  @Roles([RoleEnum.ADMIN])
+  @HasRoles([Roles.ADMIN])
   findOneAdmin(@Param('id') id: string): Promise<Article> {
-    return this.queryBus.execute(new FindArticleByIdQuery(id, true));
+    return this.queryBus.execute(new FindArticleById(id, true));
   }
 
   @Get(':slug')
   @Public()
   async findOne(@Param('slug') slug: string, @Req() request: Request): Promise<Article> {
-    await this.commandBus.execute(new IncrementArticleViewsCommand(slug, createArticleViewFingerprint(request)));
-    return this.queryBus.execute(new FindArticleBySlugQuery(slug));
+    await this.commandBus.execute(new IncrementArticleViews(slug, createArticleViewFingerprint(request)));
+    return this.queryBus.execute(new FindArticleBySlug(slug));
   }
 
   @Patch(':id')
-  @Roles([RoleEnum.ADMIN])
+  @HasRoles([Roles.ADMIN])
   update(@Param('id') id: string, @Body() dto: UpdateArticleDto): Promise<Article> {
-    return this.commandBus.execute(new UpdateArticleCommand(id, dto));
+    return this.commandBus.execute(new UpdateArticle(id, dto));
   }
 
   @Post(':id/cover')
-  @Roles([RoleEnum.ADMIN])
+  @HasRoles([Roles.ADMIN])
   @UseInterceptors(FileInterceptor('cover', createDiskUploadOptions('./uploads/articles')))
   uploadCover(@Param('id') id: string, @UploadedFile() file: Express.Multer.File): Promise<Article> {
-    return this.commandBus.execute(new UploadArticleCoverCommand(id, file));
+    return this.commandBus.execute(new UploadArticleCover(id, file));
   }
 
   @Delete(':id')
-  @Roles([RoleEnum.ADMIN])
+  @HasRoles([Roles.ADMIN])
   remove(@Param('id') id: string): Promise<void> {
-    return this.commandBus.execute(new DeleteArticleCommand(id));
+    return this.commandBus.execute(new DeleteArticle(id));
   }
 }

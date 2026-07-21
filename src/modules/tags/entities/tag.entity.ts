@@ -1,5 +1,5 @@
 import { Article } from '@/modules/articles/entities/article.entity';
-import { AbstractEntity } from '@/modules/database/abstract.entity';
+import { AbstractEntity } from '@/shared/abstracts';
 import { Column, Entity, ManyToMany } from 'typeorm';
 
 @Entity()
