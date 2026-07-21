@@ -13,7 +13,7 @@ export class TagsController extends AbstractController {
   @Post()
   @HasRoles([Roles.ADMIN])
   create(@Body() dto: CreateTagDto): Promise<Tag> {
-    return this.commandBus.execute(new CreateTag(dto));
+    return this.commandBus.execute(new CreateTag(dto.name));
   }
 
   @Get()
@@ -31,7 +31,7 @@ export class TagsController extends AbstractController {
   @Patch(':id')
   @HasRoles([Roles.ADMIN])
   update(@Param('id') id: string, @Body() dto: UpdateTagDto): Promise<Tag> {
-    return this.commandBus.execute(new UpdateTag(id, dto));
+    return this.commandBus.execute(new UpdateTag(id, dto.name));
   }
 
   @Delete(':id')

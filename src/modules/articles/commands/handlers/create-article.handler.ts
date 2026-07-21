@@ -17,24 +17,23 @@ export class CreateArticleHandler implements ICommandHandler<CreateArticle, Arti
   ) {}
 
   async execute(command: CreateArticle): Promise<Article> {
-    const { dto } = command;
-    const { tagIds, ...articleDto } = dto;
+    const { title, summary, content, publishedAt, tagIds } = command;
 
     try {
       const tags = await this.queryBus.execute(new FindTagsByIds(tagIds ?? []));
 
       return await this.repository.save(
         this.repository.create({
-          ...articleDto,
-          publishedAt: dto.publishedAt ? new Date(dto.publishedAt) : new Date(),
+          title,
+          summary,
+          content,
+          publishedAt: publishedAt ? new Date(publishedAt) : new Date(),
           tags
         })
       );
     } catch (error) {
-      if (error instanceof BadRequestException) throw error;
-
       this.logger.error(
-        `Create article failed title="${dto.title}": ${error instanceof Error ? error.message : String(error)}`
+        `Create article failed title="${title}": ${error instanceof Error ? error.message : String(error)}`
       );
       throw new BadRequestException("Création de l'article impossible");
     }

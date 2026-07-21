@@ -17,14 +17,14 @@ export class UpdateTagHandler implements ICommandHandler<UpdateTag, Tag> {
   ) {}
 
   async execute(command: UpdateTag): Promise<Tag> {
-    const { dto, id } = command;
+    const { id, name } = command;
 
     try {
       const tag = await this.queryBus.execute<FindTagById, Tag>(new FindTagById(id));
 
-      if (dto.name) {
+      if (name) {
         const existingTag = await this.repository.findOne({
-          where: { name: dto.name, id: Not(id) }
+          where: { name, id: Not(id) }
         });
 
         if (existingTag) {
@@ -32,7 +32,7 @@ export class UpdateTagHandler implements ICommandHandler<UpdateTag, Tag> {
         }
       }
 
-      return await this.repository.save(this.repository.merge(tag, dto));
+      return await this.repository.save(this.repository.merge(tag, { name }));
     } catch (error) {
       if (error instanceof ConflictException || error instanceof NotFoundException) throw error;
 

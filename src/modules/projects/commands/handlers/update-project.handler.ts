@@ -17,12 +17,12 @@ export class UpdateProjectHandler implements ICommandHandler<UpdateProject, Proj
   ) {}
 
   async execute(command: UpdateProject): Promise<Project> {
-    const { dto, id } = command;
+    const { id, name, summary, links } = command;
 
     try {
       const project = await this.queryBus.execute(new FindProjectById(id));
 
-      return await this.repository.save(this.repository.merge(project, dto));
+      return await this.repository.save(this.repository.merge(project, { name, summary, links }));
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
 

@@ -17,14 +17,14 @@ export class UpdateRoleHandler implements ICommandHandler<UpdateRole, Role> {
   ) {}
 
   async execute(command: UpdateRole): Promise<Role> {
-    const { dto, id } = command;
+    const { id, name } = command;
 
     try {
       const role = await this.queryBus.execute(new FindRoleById(id));
 
-      if (dto.name && dto.name !== role.name) {
+      if (name && name !== role.name) {
         const existingRole = await this.repository.findOne({
-          where: { name: dto.name }
+          where: { name }
         });
 
         if (existingRole) {
@@ -32,7 +32,7 @@ export class UpdateRoleHandler implements ICommandHandler<UpdateRole, Role> {
         }
       }
 
-      return await this.repository.save(this.repository.merge(role, dto));
+      return await this.repository.save(this.repository.merge(role, { name }));
     } catch (error) {
       if (error instanceof ConflictException || error instanceof NotFoundException) throw error;
 

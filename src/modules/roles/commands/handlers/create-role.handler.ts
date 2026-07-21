@@ -15,7 +15,7 @@ export class CreateRoleHandler implements ICommandHandler<CreateRole, Role> {
   ) {}
 
   async execute(command: CreateRole): Promise<Role> {
-    const { name } = command.dto;
+    const { name } = command;
 
     try {
       const role = await this.repository.findOne({
@@ -26,7 +26,7 @@ export class CreateRoleHandler implements ICommandHandler<CreateRole, Role> {
         throw new ConflictException('Ce rôle existe déjà');
       }
 
-      return await this.repository.save(this.repository.create(command.dto));
+      return await this.repository.save(this.repository.create({ name }));
     } catch (error) {
       if (error instanceof ConflictException) throw error;
 

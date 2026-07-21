@@ -14,7 +14,7 @@ export class RolesController extends AbstractController {
   @Post()
   @HasRoles([Roles.ADMIN])
   create(@Body() dto: CreateRoleDto): Promise<Role> {
-    return this.commandBus.execute(new CreateRole(dto));
+    return this.commandBus.execute(new CreateRole(dto.name));
   }
 
   @Get()
@@ -32,7 +32,7 @@ export class RolesController extends AbstractController {
   @Patch(':id')
   @HasRoles([Roles.ADMIN])
   update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto): Promise<Role> {
-    return this.commandBus.execute(new UpdateRole(id, updateRoleDto));
+    return this.commandBus.execute(new UpdateRole(id, updateRoleDto.name));
   }
 
   @Delete(':id')

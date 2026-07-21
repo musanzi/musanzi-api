@@ -1,9 +1,12 @@
 import { Command } from '@nestjs/cqrs';
-import { CreateProjectDto } from '../../dto';
 import { Project } from '../../entities/project.entity';
 
 export class CreateProject extends Command<Project> {
-  constructor(public readonly dto: CreateProjectDto) {
+  constructor(
+    public readonly name: string,
+    public readonly summary: string,
+    public readonly links?: { label: string; href: string }[]
+  ) {
     super();
   }
 }

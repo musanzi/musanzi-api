@@ -15,12 +15,7 @@ import { Public, HasRoles } from '@/modules/auth/decorators';
 import { Roles } from '@/modules/auth/enums';
 import { AbstractController } from '@/shared/abstracts';
 import { createDiskUploadOptions } from '@/shared/helpers';
-import {
-  CreateProject,
-  DeleteProject,
-  UpdateProject,
-  UploadProjectImage
-} from '../commands';
+import { CreateProject, DeleteProject, UpdateProject, UploadProjectImage } from '../commands';
 import { CreateProjectDto, UpdateProjectDto } from '../dto';
 import { Project } from '../entities/project.entity';
 import { IFilterProjects } from '../interfaces';
@@ -31,7 +26,7 @@ export class ProjectsController extends AbstractController {
   @Post()
   @HasRoles([Roles.ADMIN])
   create(@Body() dto: CreateProjectDto): Promise<Project> {
-    return this.commandBus.execute(new CreateProject(dto));
+    return this.commandBus.execute(new CreateProject(dto.name, dto.summary, dto.links));
   }
 
   @Get()
@@ -49,7 +44,7 @@ export class ProjectsController extends AbstractController {
   @Patch(':id')
   @HasRoles([Roles.ADMIN])
   update(@Param('id') id: string, @Body() dto: UpdateProjectDto): Promise<Project> {
-    return this.commandBus.execute(new UpdateProject(id, dto));
+    return this.commandBus.execute(new UpdateProject(id, dto.name, dto.summary, dto.links));
   }
 
   @Post(':id/image')

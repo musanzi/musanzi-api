@@ -15,7 +15,7 @@ export class CreateTagHandler implements ICommandHandler<CreateTag, Tag> {
   ) {}
 
   async execute(command: CreateTag): Promise<Tag> {
-    const { name } = command.dto;
+    const { name } = command;
 
     try {
       const tag = await this.repository.findOne({

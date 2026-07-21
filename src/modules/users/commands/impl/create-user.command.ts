@@ -1,9 +1,14 @@
 import { Command } from '@nestjs/cqrs';
-import { CreateUserDto } from '../../dto/create-user.dto';
 import { IUserResponse } from '../../interfaces';
 
 export class CreateUser extends Command<IUserResponse> {
-  constructor(public readonly dto: CreateUserDto) {
+  constructor(
+    public readonly email: string,
+    public readonly name: string,
+    public readonly password?: string,
+    public readonly avatar?: string,
+    public readonly roles?: string[]
+  ) {
     super();
   }
 }

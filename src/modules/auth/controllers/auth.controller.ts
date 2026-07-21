@@ -10,13 +10,7 @@ import { ResetPasswordDto } from '@/modules/auth/dto/reset-password.dto';
 import { Public } from '../decorators/public.decorator';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 import { CurrentUser } from '../decorators/current-user.decorator';
-import {
-  ForgotPassword,
-  ResetPassword,
-  SignOut,
-  UpdatePassword,
-  UpdateProfile
-} from '../commands';
+import { ForgotPassword, ResetPassword, SignOut, UpdatePassword, UpdateProfile } from '../commands';
 import { Profile, SignIn } from '../queries';
 
 @Controller('auth')
@@ -40,23 +34,23 @@ export class AuthController extends AbstractController {
 
   @Patch('me/update')
   updateProfile(@CurrentUser() user: User, @Body() dto: UpdateUserDto): Promise<IUserResponse> {
-    return this.commandBus.execute(new UpdateProfile(user, dto));
+    return this.commandBus.execute(new UpdateProfile(user, dto.email, dto.name, dto.password, dto.avatar, dto.roles));
   }
 
   @Patch('password/update')
   updatePassword(@CurrentUser() user: User, @Body() dto: UpdatePasswordDto): Promise<IUserResponse> {
-    return this.commandBus.execute(new UpdatePassword(user, dto));
+    return this.commandBus.execute(new UpdatePassword(user, dto.password));
   }
 
   @Post('password/forgot')
   @Public()
   forgotPassword(@Body() dto: ForgotPasswordDto): Promise<void> {
-    return this.commandBus.execute(new ForgotPassword(dto));
+    return this.commandBus.execute(new ForgotPassword(dto.email));
   }
 
   @Post('password/reset')
   @Public()
   resetPassword(@Body() dto: ResetPasswordDto): Promise<IUserResponse> {
-    return this.commandBus.execute(new ResetPassword(dto));
+    return this.commandBus.execute(new ResetPassword(dto.token, dto.password));
   }
 }

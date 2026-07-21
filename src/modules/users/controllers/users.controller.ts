@@ -22,13 +22,7 @@ import { Roles } from '@/modules/auth/enums';
 import { AbstractController } from '@/shared/abstracts';
 import { createDiskUploadOptions } from '@/shared/helpers';
 import { Response } from 'express';
-import {
-  CreateUser,
-  DeleteUser,
-  ImportUsersCsv,
-  UpdateUser,
-  UploadUserAvatar
-} from '../commands';
+import { CreateUser, DeleteUser, ImportUsersCsv, UpdateUser, UploadUserAvatar } from '../commands';
 import { ExportUsersCsv, FindUserByEmail, FindUsers } from '../queries';
 
 @Controller('users')
@@ -36,7 +30,7 @@ export class UsersController extends AbstractController {
   @Post()
   @HasRoles([Roles.ADMIN])
   create(@Body() dto: CreateUserDto): Promise<IUserResponse> {
-    return this.commandBus.execute(new CreateUser(dto));
+    return this.commandBus.execute(new CreateUser(dto.email, dto.name, dto.password, dto.avatar, dto.roles));
   }
 
   @Get()
@@ -73,7 +67,7 @@ export class UsersController extends AbstractController {
   @Patch(':id')
   @HasRoles([Roles.ADMIN])
   update(@Param('id') id: string, @Body() dto: UpdateUserDto): Promise<IUserResponse> {
-    return this.commandBus.execute(new UpdateUser(id, dto));
+    return this.commandBus.execute(new UpdateUser(id, dto.email, dto.name, dto.password, dto.avatar, dto.roles));
   }
 
   @Delete(':id')

@@ -19,20 +19,20 @@ export class UpdateUserHandler implements ICommandHandler<UpdateUser, IUserRespo
   ) {}
 
   async execute(command: UpdateUser): Promise<IUserResponse> {
-    const { roles, ...dto } = command.dto;
+    const { id, email, name, password, avatar, roles } = command;
 
     try {
       const user = await this.repository.findOne({
-        where: { id: command.id }
+        where: { id }
       });
 
       if (!user) {
         throw new NotFoundException('Aucun utilisateur trouvé');
       }
 
-      if (dto.email && dto.email !== user.email) {
+      if (email && email !== user.email) {
         const existingUser = await this.repository.findOne({
-          where: { email: dto.email }
+          where: { email }
         });
 
         if (existingUser) {
@@ -42,7 +42,10 @@ export class UpdateUserHandler implements ICommandHandler<UpdateUser, IUserRespo
 
       const updatedUser = await this.repository.save(
         this.repository.merge(user, {
-          ...dto,
+          email,
+          name,
+          password,
+          avatar,
           roles: roles ? mapRoleIds(roles) : undefined
         })
       );
@@ -50,9 +53,7 @@ export class UpdateUserHandler implements ICommandHandler<UpdateUser, IUserRespo
     } catch (error) {
       if (error instanceof NotFoundException || error instanceof ConflictException) throw error;
 
-      this.logger.error(
-        `Update user failed id="${command.id}": ${error instanceof Error ? error.message : String(error)}`
-      );
+      this.logger.error(`Update user failed id="${id}": ${error instanceof Error ? error.message : String(error)}`);
       throw new BadRequestException('Mise à jour impossible');
     }
   }

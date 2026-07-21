@@ -15,15 +15,13 @@ export class CreateProjectHandler implements ICommandHandler<CreateProject, Proj
   ) {}
 
   async execute(command: CreateProject): Promise<Project> {
+    const { name, summary, links } = command;
+
     try {
-      return await this.repository.save(
-        this.repository.create({
-          ...command.dto
-        })
-      );
+      return await this.repository.save(this.repository.create({ name, summary, links }));
     } catch (error) {
       this.logger.error(
-        `Create project failed name="${command.dto.name}": ${error instanceof Error ? error.message : String(error)}`
+        `Create project failed name="${name}": ${error instanceof Error ? error.message : String(error)}`
       );
       throw new BadRequestException('Création du projet impossible');
     }

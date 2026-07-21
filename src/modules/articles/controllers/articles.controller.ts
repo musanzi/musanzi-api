@@ -17,13 +17,7 @@ import { Public, HasRoles } from '@/modules/auth/decorators';
 import { Roles } from '@/modules/auth/enums';
 import { AbstractController } from '@/shared/abstracts';
 import { createDiskUploadOptions } from '@/shared/helpers';
-import {
-  CreateArticle,
-  DeleteArticle,
-  IncrementArticleViews,
-  UpdateArticle,
-  UploadArticleCover
-} from '../commands';
+import { CreateArticle, DeleteArticle, IncrementArticleViews, UpdateArticle, UploadArticleCover } from '../commands';
 import { CreateArticleDto, UpdateArticleDto } from '../dto';
 import { Article } from '../entities/article.entity';
 import { createArticleViewFingerprint } from '../helpers';
@@ -35,7 +29,7 @@ export class ArticlesController extends AbstractController {
   @Post()
   @HasRoles([Roles.ADMIN])
   create(@Body() dto: CreateArticleDto): Promise<Article> {
-    return this.commandBus.execute(new CreateArticle(dto));
+    return this.commandBus.execute(new CreateArticle(dto.title, dto.summary, dto.content, dto.publishedAt, dto.tagIds));
   }
 
   @Get()
@@ -66,7 +60,9 @@ export class ArticlesController extends AbstractController {
   @Patch(':id')
   @HasRoles([Roles.ADMIN])
   update(@Param('id') id: string, @Body() dto: UpdateArticleDto): Promise<Article> {
-    return this.commandBus.execute(new UpdateArticle(id, dto));
+    return this.commandBus.execute(
+      new UpdateArticle(id, dto.title, dto.summary, dto.content, dto.publishedAt, dto.tagIds)
+    );
   }
 
   @Post(':id/cover')

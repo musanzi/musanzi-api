@@ -18,8 +18,7 @@ export class UpdateArticleHandler implements ICommandHandler<UpdateArticle, Arti
   ) {}
 
   async execute(command: UpdateArticle): Promise<Article> {
-    const { dto, id } = command;
-    const { tagIds, ...articleDto } = dto;
+    const { id, title, summary, content, publishedAt, tagIds } = command;
 
     try {
       const article = await this.queryBus.execute(new FindArticleById(id, true));
@@ -27,8 +26,10 @@ export class UpdateArticleHandler implements ICommandHandler<UpdateArticle, Arti
 
       return await this.repository.save({
         ...article,
-        ...articleDto,
-        publishedAt: dto.publishedAt ? new Date(dto.publishedAt) : new Date(),
+        title,
+        summary,
+        content,
+        publishedAt: publishedAt ? new Date(publishedAt) : new Date(),
         tags
       });
     } catch (error) {
