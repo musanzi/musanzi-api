@@ -21,16 +21,15 @@ export class CreateArticleHandler implements ICommandHandler<CreateArticle, Arti
 
     try {
       const tags = await this.queryBus.execute(new FindTagsByIds(tagIds ?? []));
+      const article = this.repository.create({
+        title,
+        summary,
+        content,
+        publishedAt: publishedAt ? new Date(publishedAt) : new Date(),
+        tags
+      });
 
-      return await this.repository.save(
-        this.repository.create({
-          title,
-          summary,
-          content,
-          publishedAt: publishedAt ? new Date(publishedAt) : new Date(),
-          tags
-        })
-      );
+      return await this.repository.save(article);
     } catch (error) {
       this.logger.error(
         `Create article failed title="${title}": ${error instanceof Error ? error.message : String(error)}`
