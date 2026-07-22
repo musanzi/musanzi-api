@@ -2,13 +2,10 @@ import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler, QueryBus } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { promises } from 'fs';
-import { join } from 'path';
 import { Repository } from 'typeorm';
 import { Article } from '../../entities/article.entity';
 import { FindArticleById } from '../../queries';
 import { UploadArticleCover } from '../impl';
-
-const ARTICLE_UPLOAD_DIR = './uploads/articles';
 
 @CommandHandler(UploadArticleCover)
 export class UploadArticleCoverHandler implements ICommandHandler<UploadArticleCover, Article> {
@@ -27,7 +24,7 @@ export class UploadArticleCoverHandler implements ICommandHandler<UploadArticleC
       const article = await this.queryBus.execute(new FindArticleById(id));
 
       if (article.cover) {
-        await promises.unlink(join(ARTICLE_UPLOAD_DIR, article.cover));
+        await promises.rm(`./uploads/articles/${article.cover}`, { force: true });
       }
 
       await this.repository.update(id, { cover: file.filename });
