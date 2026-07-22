@@ -31,7 +31,6 @@ export class UploadProjectImageHandler implements ICommandHandler<UploadProjectI
       }
 
       await this.repository.update(id, { image: file.filename });
-
       return await this.queryBus.execute(new FindProjectById(id));
     } catch (error) {
       if (error instanceof NotFoundException) throw error;

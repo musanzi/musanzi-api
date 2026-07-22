@@ -18,7 +18,9 @@ export class CreateProjectHandler implements ICommandHandler<CreateProject, Proj
     const { name, summary, links } = command;
 
     try {
-      return await this.repository.save(this.repository.create({ name, summary, links }));
+      const project = this.repository.create({ name, summary, links });
+
+      return await this.repository.save(project);
     } catch (error) {
       this.logger.error(
         `Create project failed name="${name}": ${error instanceof Error ? error.message : String(error)}`

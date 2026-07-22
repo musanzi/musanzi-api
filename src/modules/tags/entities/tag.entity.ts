@@ -4,7 +4,7 @@ import { Column, Entity, ManyToMany } from 'typeorm';
 
 @Entity()
 export class Tag extends AbstractEntity {
-  @Column({ type: 'varchar', length: 80, unique: true })
+  @Column({ unique: true })
   name: string;
 
   @ManyToMany(() => Article, (article) => article.tags)

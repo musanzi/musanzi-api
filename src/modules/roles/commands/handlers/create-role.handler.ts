@@ -18,15 +18,9 @@ export class CreateRoleHandler implements ICommandHandler<CreateRole, Role> {
     const { name } = command;
 
     try {
-      const role = await this.repository.findOne({
-        where: { name }
-      });
+      const role = this.repository.create({ name });
 
-      if (role) {
-        throw new ConflictException('Ce rôle existe déjà');
-      }
-
-      return await this.repository.save(this.repository.create({ name }));
+      return await this.repository.save(role);
     } catch (error) {
       if (error instanceof ConflictException) throw error;
 

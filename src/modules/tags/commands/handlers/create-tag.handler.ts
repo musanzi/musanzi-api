@@ -18,15 +18,9 @@ export class CreateTagHandler implements ICommandHandler<CreateTag, Tag> {
     const { name } = command;
 
     try {
-      const tag = await this.repository.findOne({
-        where: { name }
-      });
+      const tag = this.repository.create({ name });
 
-      if (tag) {
-        throw new ConflictException('Ce tag existe déjà');
-      }
-
-      return await this.repository.save(this.repository.create({ name }));
+      return await this.repository.save(tag);
     } catch (error) {
       if (error instanceof ConflictException) throw error;
 

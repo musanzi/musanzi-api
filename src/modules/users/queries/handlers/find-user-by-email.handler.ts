@@ -17,15 +17,21 @@ export class FindUserByEmailHandler implements IQueryHandler<FindUserByEmail, IU
   ) {}
 
   async execute(query: FindUserByEmail): Promise<IUserResponse> {
+    const { email, includePassword } = query;
+
     try {
-      const user = await this.repository.findOneOrFail({
-        where: { email: query.email },
-        relations: ['roles']
-      });
+      const query = this.repository.createQueryBuilder('u');
+
+      if (includePassword) {
+        query.addSelect('u.password');
+      }
+
+      const user = await query.getOneOrFail();
+
       return mapUserRoles(user);
     } catch (error) {
       this.logger.error(
-        `Find user by email failed email="${query.email}": ${error instanceof Error ? error.message : String(error)}`
+        `Find user by email failed email="${email}": ${error instanceof Error ? error.message : String(error)}`
       );
       throw new NotFoundException('Utilisateur introuvable');
     }

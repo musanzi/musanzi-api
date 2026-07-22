@@ -4,10 +4,10 @@ import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 @Entity()
 export class Article extends AbstractEntity {
-  @Column({ type: 'varchar', length: 180 })
+  @Column()
   title: string;
 
-  @Column({ type: 'varchar', length: 220, unique: true })
+  @Column({ unique: true })
   slug: string;
 
   @Column({ type: 'text' })
@@ -16,7 +16,7 @@ export class Article extends AbstractEntity {
   @Column({ type: 'text', select: false })
   content: string;
 
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ nullable: true })
   cover: string | null;
 
   @Column({ type: 'timestamptz' })

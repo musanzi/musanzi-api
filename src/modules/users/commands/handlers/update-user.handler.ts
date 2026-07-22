@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler, QueryBus } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -22,36 +22,20 @@ export class UpdateUserHandler implements ICommandHandler<UpdateUser, IUserRespo
     const { id, email, name, password, avatar, roles } = command;
 
     try {
-      const user = await this.repository.findOne({
-        where: { id }
+      const user = await this.repository.findOneOrFail({ where: { id } });
+      const updatedUser = this.repository.merge(user, {
+        email,
+        name,
+        password,
+        avatar,
+        roles: roles ? mapRoleIds(roles) : undefined
       });
 
-      if (!user) {
-        throw new NotFoundException('Aucun utilisateur trouvé');
-      }
+      await this.repository.save(updatedUser);
 
-      if (email && email !== user.email) {
-        const existingUser = await this.repository.findOne({
-          where: { email }
-        });
-
-        if (existingUser) {
-          throw new ConflictException('Un utilisateur avec cette adresse email existe déjà');
-        }
-      }
-
-      const updatedUser = await this.repository.save(
-        this.repository.merge(user, {
-          email,
-          name,
-          password,
-          avatar,
-          roles: roles ? mapRoleIds(roles) : undefined
-        })
-      );
-      return this.queryBus.execute(new FindUserById(updatedUser.id));
+      return this.queryBus.execute(new FindUserById(id));
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof ConflictException) throw error;
+      if (error instanceof NotFoundException) throw error;
 
       this.logger.error(`Update user failed id="${id}": ${error instanceof Error ? error.message : String(error)}`);
       throw new BadRequestException('Mise à jour impossible');

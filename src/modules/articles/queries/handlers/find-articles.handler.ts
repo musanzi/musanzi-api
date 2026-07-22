@@ -17,25 +17,16 @@ export class FindArticlesHandler implements IQueryHandler<FindArticles, [Article
 
   async execute(query: FindArticles): Promise<[Article[], number]> {
     try {
-      const { q, tagId, status } = query.params;
+      const { q, tagId } = query.params;
       const queryBuilder = this.repository
         .createQueryBuilder('article')
         .leftJoinAndSelect('article.tags', 'tags')
-        .where('1 = 1')
-        .orderBy('article.publishedAt', 'DESC', 'NULLS LAST')
-        .addOrderBy('article.updatedAt', 'DESC');
-
-      if (!query.includeUnpublished) {
-        queryBuilder.andWhere('article.publishedAt IS NOT NULL');
-      } else if (status === 'draft') {
-        queryBuilder.andWhere('article.publishedAt IS NULL');
-      } else if (status === 'published') {
-        queryBuilder.andWhere('article.publishedAt IS NOT NULL');
-      }
+        .orderBy('article.publishedAt', 'DESC', 'NULLS LAST');
 
       if (q) {
-        const condition = '(article.title ILIKE :q OR article.summary ILIKE :q OR article.content ILIKE :q)';
-        queryBuilder.andWhere(condition, { q: `%${q}%` });
+        queryBuilder.andWhere('article.title ILIKE :q OR article.summary ILIKE :q OR article.content ILIKE :q', {
+          q: `%${q}%`
+        });
       }
 
       if (tagId) {

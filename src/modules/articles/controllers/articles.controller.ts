@@ -22,7 +22,7 @@ import { CreateArticleDto, UpdateArticleDto } from '../dto';
 import { Article } from '../entities/article.entity';
 import { createArticleViewFingerprint } from '../helpers';
 import { IFilterArticles } from '../interfaces';
-import { FindArticleById, FindArticleBySlug, FindArticles } from '../queries';
+import { FindArticleBySlug, FindArticles } from '../queries';
 
 @Controller('articles')
 export class ArticlesController extends AbstractController {
@@ -36,18 +36,6 @@ export class ArticlesController extends AbstractController {
   @Public()
   findAll(@Query() query: IFilterArticles): Promise<[Article[], number]> {
     return this.queryBus.execute(new FindArticles(query));
-  }
-
-  @Get('admin')
-  @HasRoles([Roles.ADMIN])
-  findAllAdmin(@Query() query: IFilterArticles): Promise<[Article[], number]> {
-    return this.queryBus.execute(new FindArticles(query, true));
-  }
-
-  @Get('admin/:id')
-  @HasRoles([Roles.ADMIN])
-  findOneAdmin(@Param('id') id: string): Promise<Article> {
-    return this.queryBus.execute(new FindArticleById(id, true));
   }
 
   @Get(':slug')

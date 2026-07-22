@@ -16,16 +16,12 @@ export class FindArticleByIdHandler implements IQueryHandler<FindArticleById, Ar
 
   async execute(query: FindArticleById): Promise<Article> {
     try {
-      const queryBuilder = this.repository
+      return await this.repository
         .createQueryBuilder('article')
         .leftJoinAndSelect('article.tags', 'tags')
-        .where('article.id = :id', { id: query.id });
-
-      if (query.includeContent) {
-        queryBuilder.addSelect('article.content');
-      }
-
-      return await queryBuilder.getOneOrFail();
+        .where('article.id = :id', { id: query.id })
+        .addSelect('article.content')
+        .getOneOrFail();
     } catch (error) {
       this.logger.error(
         `Find article by id failed id="${query.id}": ${error instanceof Error ? error.message : String(error)}`

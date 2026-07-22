@@ -31,8 +31,8 @@ export class RolesController extends AbstractController {
 
   @Patch(':id')
   @HasRoles([Roles.ADMIN])
-  update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto): Promise<Role> {
-    return this.commandBus.execute(new UpdateRole(id, updateRoleDto.name));
+  update(@Param('id') id: string, @Body() dto: UpdateRoleDto): Promise<Role> {
+    return this.commandBus.execute(new UpdateRole(id, dto.name));
   }
 
   @Delete(':id')

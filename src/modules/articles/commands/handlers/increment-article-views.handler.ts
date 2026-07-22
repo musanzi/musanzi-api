@@ -22,24 +22,17 @@ export class IncrementArticleViewsHandler implements ICommandHandler<IncrementAr
         .addSelect('article.viewHllRegisters')
         .where('article.slug = :slug', { slug: command.slug })
         .andWhere('article.publishedAt IS NOT NULL')
-        .getOne();
-
-      if (!article) {
-        throw new NotFoundException('Article introuvable');
-      }
-
+        .getOneOrFail();
       const [viewHllRegisters, viewsCount] = addHyperLogLogValue(article.viewHllRegisters, command.viewerFingerprint);
 
       await this.repository.update(article.id, { viewHllRegisters, viewsCount });
     } catch (error) {
-      if (error instanceof NotFoundException) throw error;
-
       this.logger.error(
         `Increment article views failed slug="${command.slug}": ${
           error instanceof Error ? error.message : String(error)
         }`
       );
-      throw error;
+      throw new NotFoundException('Article introuvable');
     }
   }
 }

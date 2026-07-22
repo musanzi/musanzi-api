@@ -11,7 +11,7 @@ import { Public } from '../decorators/public.decorator';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import { ForgotPassword, ResetPassword, SignOut, UpdatePassword, UpdateProfile } from '../commands';
-import { Profile, SignIn } from '../queries';
+import { GetProfile, SignIn } from '../queries';
 
 @Controller('auth')
 export class AuthController extends AbstractController {
@@ -29,12 +29,14 @@ export class AuthController extends AbstractController {
 
   @Get('me')
   profile(@CurrentUser() user: User): Promise<IUserResponse> {
-    return this.queryBus.execute(new Profile(user));
+    return this.queryBus.execute(new GetProfile(user));
   }
 
   @Patch('me/update')
   updateProfile(@CurrentUser() user: User, @Body() dto: UpdateUserDto): Promise<IUserResponse> {
-    return this.commandBus.execute(new UpdateProfile(user, dto.email, dto.name, dto.password, dto.avatar, dto.roles));
+    return this.commandBus.execute(
+      new UpdateProfile(user.id, dto.email, dto.name, dto.password, dto.avatar, dto.roles)
+    );
   }
 
   @Patch('password/update')
